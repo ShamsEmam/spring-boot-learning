@@ -1,250 +1,89 @@
 # Banking System
 
-A Java console application that simulates core banking operations while demonstrating fundamental Object-Oriented Programming principles.
+A Java console-based project designed to practice and demonstrate core Object-Oriented Programming principles through a simplified banking domain.
 
-The system manages customers and their bank accounts, supports multiple account types, and provides common banking operations such as deposits, withdrawals, and transfers.
+This document defines the **shared project specification** for the Banking System individual exercise.
 
-This project is part of a Java and Spring Boot learning journey and focuses specifically on designing clean, maintainable object-oriented code before introducing frameworks, databases, or external dependencies.
+Each developer implements the same requirements independently in a separate directory and feature branch. The implementations can then be reviewed and compared in terms of object-oriented design, code organization, and implementation decisions.
 
-> **Project Scope:** This is an educational project designed for practicing Java OOP concepts. It is not intended to represent a production-ready banking system.
-
----
-
-## Overview
-
-The application models a simplified banking environment in which:
-
-- A bank manages multiple customers.
-- A customer can own one or more accounts.
-- Multiple account types can share common behavior.
-- Customers can deposit and withdraw funds.
-- Money can be transferred between accounts.
-- Account and customer information can be displayed.
-- Invalid banking operations are rejected.
-
-The primary goal is to model the domain using proper object relationships and OOP principles rather than placing the entire application logic inside a single class.
+> **Scope:** This is an educational project intended for practicing Java and Object-Oriented Programming. It is not a production-ready banking application.
 
 ---
 
-## Features
+## Project Objective
 
-The initial version of the system includes:
+The goal of this exercise is to model a small banking system using clean object-oriented design.
 
-- Customer creation
-- Bank account creation
-- Multiple account types
-- Deposit operations
-- Withdrawal operations
-- Transfers between accounts
-- Balance inquiries
-- Account information display
-- Customer information display
-- Basic transaction validation
-- Protection against invalid account operations
+The system should demonstrate how responsibilities can be distributed between collaborating objects rather than placing all business logic inside a single class.
+
+Each developer should independently design and implement the solution while satisfying the same functional requirements and business rules.
+
+---
+
+## Functional Requirements
+
+The application should support the following operations:
+
+- Create customers.
+- Create bank accounts.
+- Support multiple account types.
+- Deposit money into an account.
+- Withdraw money from an account.
+- Transfer money between accounts.
+- Display account information.
+- Display customer information.
+- Check the current account balance.
+- Reject invalid banking operations.
 
 ---
 
 ## Account Types
 
-The application currently supports two account types.
+The initial version should support at least two account types.
 
 ### Savings Account
 
-Represents a standard savings account.
-
-```text
-SavingsAccount
-      │
-      └── extends Account
-```
-
-It inherits the common state and behavior defined by the `Account` abstraction and can introduce savings-specific rules when required.
+Represents an account intended primarily for storing customer funds.
 
 ### Current Account
 
 Represents an account intended for regular banking transactions.
 
-```text
-CurrentAccount
-      │
-      └── extends Account
-```
+Both account types should share common account behavior while allowing specialized behavior when required.
 
-It shares the common account behavior while allowing current-account-specific behavior to be implemented independently.
-
----
-
-## Domain Model
-
-The core relationships are designed around the following structure:
+A possible inheritance structure is:
 
 ```text
-Bank
-│
-├── Customer
-│   └── Account
-│
-└── Accounts
-    ├── SavingsAccount
-    └── CurrentAccount
+             Account
+            /       \
+           /         \
+SavingsAccount     CurrentAccount
 ```
 
-At a high level:
-
-- `Bank` manages customers and accounts.
-- `Customer` represents an account holder.
-- `Account` defines the common behavior of all bank accounts.
-- `SavingsAccount` and `CurrentAccount` specialize `Account`.
-- `Transferable` defines the contract for money transfers.
+The exact implementation is left to each developer.
 
 ---
 
-## Project Structure
+## Business Rules
 
-```text
-banking-system/
-│
-├── README.md
-│
-└── src/
-    └── com/
-        └── learning/
-            └── banking/
-                ├── Main.java
-                ├── Bank.java
-                ├── Customer.java
-                ├── Account.java
-                ├── SavingsAccount.java
-                ├── CurrentAccount.java
-                └── Transferable.java
-```
+The first version of the system should satisfy the following rules:
 
-All Java source files use the package:
+1. Deposit amounts must be greater than zero.
+2. Withdrawal amounts must be greater than zero.
+3. An account cannot withdraw more than its available balance.
+4. Transfer amounts must be greater than zero.
+5. A transfer requires sufficient funds in the source account.
+6. Every account must have a unique account number.
+7. An account balance must not be modified directly from outside the account.
+8. A customer may own one or more accounts.
+9. Every account must belong to a valid customer.
+10. Invalid operations must not modify account balances.
 
-```java
-package com.learning.banking;
-```
-
-> The project structure may evolve as additional requirements and Java concepts are introduced.
+Additional rules may be introduced in later versions.
 
 ---
 
-## Class Responsibilities
-
-### `Bank`
-
-Represents the banking system and coordinates the main domain objects.
-
-Responsibilities may include:
-
-- Managing registered customers
-- Managing bank accounts
-- Finding customers
-- Finding accounts
-- Coordinating operations between accounts
-
----
-
-### `Customer`
-
-Represents a customer registered with the bank.
-
-A customer can own one or more bank accounts.
-
-Example relationship:
-
-```text
-Customer
-│
-└── Accounts
-    ├── SavingsAccount
-    └── CurrentAccount
-```
-
-The class is responsible for storing customer-related information and maintaining the customer's account relationships.
-
----
-
-### `Account`
-
-The base abstraction for all account types.
-
-It stores common account information such as:
-
-- Account number
-- Account holder
-- Balance
-
-It also provides common banking operations such as:
-
-```java
-deposit(...)
-withdraw(...)
-getBalance()
-displayAccountInfo()
-```
-
-The `Account` abstraction prevents duplicated logic between different account types.
-
----
-
-### `SavingsAccount`
-
-Represents a savings account.
-
-It inherits common state and behavior from `Account`:
-
-```java
-SavingsAccount extends Account
-```
-
-Additional savings-specific rules can be introduced without modifying unrelated account types.
-
----
-
-### `CurrentAccount`
-
-Represents a current account.
-
-It also inherits from `Account`:
-
-```java
-CurrentAccount extends Account
-```
-
-The class can override inherited behavior when the business rules for current accounts differ from savings accounts.
-
----
-
-### `Transferable`
-
-Defines the contract for objects that support money transfers.
-
-Example:
-
-```java
-public interface Transferable {
-
-    void transfer(Account targetAccount, double amount);
-
-}
-```
-
-Using an interface separates the transfer contract from a specific implementation and demonstrates interface-based design.
-
----
-
-### `Main`
-
-The entry point of the application.
-
-`Main` is responsible for creating demo objects, performing sample banking operations, and displaying the application results.
-
-Business logic should remain inside the appropriate domain classes instead of being implemented directly in `Main`.
-
----
-
-## Banking Operations
+## Core Banking Operations
 
 ### Deposit
 
@@ -259,13 +98,7 @@ Deposit         :  500 EGP
 New Balance     : 1500 EGP
 ```
 
-Business rule:
-
-```text
-deposit amount > 0
-```
-
-Zero or negative deposits must be rejected.
+A deposit must be rejected when the amount is zero or negative.
 
 ---
 
@@ -284,9 +117,9 @@ New Balance     : 1200 EGP
 
 A withdrawal must fail when:
 
-- The requested amount is zero.
-- The requested amount is negative.
-- The requested amount exceeds the available balance.
+- the amount is zero;
+- the amount is negative;
+- the amount exceeds the available balance.
 
 ---
 
@@ -312,124 +145,115 @@ Account B : 1100 EGP
 
 A transfer must fail when:
 
-- The amount is zero or negative.
-- The source account has insufficient funds.
-- The destination account is invalid.
+- the amount is zero or negative;
+- the source account has insufficient funds;
+- the destination account is invalid.
 
 ---
 
-## Business Rules
+## Suggested Domain Model
 
-The initial version follows these rules:
-
-1. Deposit amounts must be greater than zero.
-2. Withdrawal amounts must be greater than zero.
-3. An account cannot withdraw more than its available balance.
-4. Transfer amounts must be greater than zero.
-5. A transfer requires sufficient funds in the source account.
-6. Every account must have a unique account number.
-7. Account balances cannot be modified directly from outside the account class.
-8. A customer can own multiple accounts.
-9. Every account must belong to a valid customer.
-10. Invalid operations must not modify account balances.
-
-Additional rules can be introduced as the project evolves.
-
----
-
-## Object-Oriented Programming Concepts
-
-This project is specifically designed to practice the major OOP concepts in Java.
-
-### Encapsulation
-
-Sensitive object state is kept private and modified only through controlled behavior.
-
-For example:
-
-```java
-private double balance;
-```
-
-Instead of modifying the value directly:
-
-```java
-account.balance = 5000;
-```
-
-the system exposes controlled operations:
-
-```java
-account.deposit(5000);
-account.withdraw(1000);
-```
-
-This protects the internal state of the object and allows validation rules to be applied consistently.
-
----
-
-### Inheritance
-
-Shared account behavior is defined once in `Account`.
+The following model is provided as a starting point:
 
 ```text
-             Account
-            /       \
-           /         \
-SavingsAccount     CurrentAccount
+Bank
+│
+├── Customers
+│   └── Accounts
+│
+└── Accounts
+    ├── SavingsAccount
+    └── CurrentAccount
 ```
 
-Both account types reuse the common implementation while retaining the ability to define their own specialized behavior.
+Possible domain types include:
+
+```text
+Bank
+Customer
+Account
+SavingsAccount
+CurrentAccount
+Transferable
+Main
+```
+
+These names are recommendations rather than strict implementation requirements.
+
+Each developer is encouraged to make their own design decisions while keeping the business requirements intact.
 
 ---
 
-### Abstraction
+## Suggested Responsibilities
 
-`Account` represents the general concept of a bank account without requiring the rest of the application to depend on a specific account implementation.
+### `Bank`
 
-For example:
+May be responsible for:
 
-```java
-Account account = new SavingsAccount(...);
-```
-
-The application works with the abstraction while the concrete account type provides its implementation.
-
----
-
-### Polymorphism
-
-Different account implementations can be handled through the same parent type.
-
-```java
-Account savings = new SavingsAccount(...);
-Account current = new CurrentAccount(...);
-```
-
-The actual object determines which overridden behavior executes at runtime.
+- managing customers;
+- managing accounts;
+- finding customers;
+- finding accounts;
+- coordinating operations between accounts.
 
 ---
 
-### Method Overriding
+### `Customer`
 
-Subclasses can customize inherited behavior when their business rules differ.
+Represents a bank customer.
+
+A customer may own one or more accounts.
 
 Example:
 
-```java
-@Override
-public void withdraw(double amount) {
-    // Account-specific withdrawal rules
-}
+```text
+Customer
+│
+└── Accounts
+    ├── SavingsAccount
+    └── CurrentAccount
 ```
-
-This allows account types to share the same public contract while implementing different behavior.
 
 ---
 
-### Interfaces
+### `Account`
 
-The `Transferable` interface defines a common transfer contract:
+Represents the common abstraction for bank accounts.
+
+Possible common state:
+
+- account number;
+- account holder;
+- balance.
+
+Possible common behavior:
+
+```java
+deposit(...)
+withdraw(...)
+getBalance()
+displayAccountInfo()
+```
+
+---
+
+### `SavingsAccount`
+
+Represents a savings account and may extend the common `Account` abstraction.
+
+---
+
+### `CurrentAccount`
+
+Represents a current account and may provide behavior different from a savings account when required.
+
+---
+
+### `Transferable`
+
+A possible interface for objects that support money transfers.
+
+For example:
 
 ```java
 public interface Transferable {
@@ -439,15 +263,115 @@ public interface Transferable {
 }
 ```
 
-This encourages programming against abstractions instead of tightly coupling the system to a single concrete implementation.
+Using an interface is optional if a developer chooses another clean design that satisfies the requirements.
+
+---
+
+### `Main`
+
+Acts as the entry point for the console application.
+
+It should primarily demonstrate the system.
+
+Business logic should remain inside the appropriate domain classes rather than being implemented directly in `Main`.
+
+---
+
+## OOP Concepts to Practice
+
+The project is intended to reinforce the following concepts.
+
+### Classes and Objects
+
+Model banking entities using separate classes with clearly defined responsibilities.
+
+### Encapsulation
+
+Protect object state from uncontrolled modification.
+
+For example:
+
+```java
+private double balance;
+```
+
+Instead of modifying the balance directly:
+
+```java
+account.balance = 5000;
+```
+
+use controlled behavior:
+
+```java
+account.deposit(5000);
+account.withdraw(1000);
+```
+
+---
+
+### Inheritance
+
+Reuse common account behavior when multiple account types share the same characteristics.
+
+```text
+             Account
+            /       \
+           /         \
+SavingsAccount     CurrentAccount
+```
+
+---
+
+### Abstraction
+
+Represent common concepts through higher-level abstractions rather than depending only on concrete implementations.
+
+Example:
+
+```java
+Account account = new SavingsAccount(...);
+```
+
+---
+
+### Polymorphism
+
+Allow multiple account implementations to be handled through the same abstraction.
+
+Example:
+
+```java
+Account savings = new SavingsAccount(...);
+Account current = new CurrentAccount(...);
+```
+
+---
+
+### Method Overriding
+
+Allow subclasses to customize inherited behavior when different business rules are required.
+
+Example:
+
+```java
+@Override
+public void withdraw(double amount) {
+    // Account-specific behavior
+}
+```
+
+---
+
+### Interfaces
+
+Use interfaces when appropriate to define behavior independently from implementation.
 
 ---
 
 ### Composition and Association
 
-The project models relationships between domain objects.
-
-For example:
+Model relationships between objects such as:
 
 ```text
 Bank
@@ -457,20 +381,20 @@ Bank
     └── Accounts
 ```
 
-Instead of placing every responsibility inside one class, objects collaborate to perform banking operations.
+The goal is to let objects collaborate while keeping responsibilities separated.
 
 ---
 
 ## Example Scenario
 
-Consider two customers:
+Consider the following customers:
 
 | Customer | Account Type | Initial Balance |
 |---|---|---:|
 | Ahmed | Savings Account | 5000 EGP |
 | Omar | Current Account | 3000 EGP |
 
-The application performs the following operations:
+The application performs:
 
 ```text
 Ahmed deposits 1000 EGP.
@@ -480,7 +404,7 @@ Omar withdraws 500 EGP.
 Ahmed transfers 1500 EGP to Omar.
 ```
 
-The resulting balances are:
+Expected final balances:
 
 ```text
 Ahmed -> 4500 EGP
@@ -489,33 +413,197 @@ Omar  -> 4000 EGP
 
 ---
 
-## Example Output
+## Acceptance Criteria
 
-A possible console output could look like:
+An implementation is considered complete when:
+
+- Customers can be created.
+- Accounts can be created and associated with customers.
+- At least two account types are supported.
+- Deposits update balances correctly.
+- Withdrawals update balances correctly.
+- Invalid withdrawals are rejected.
+- Transfers update both accounts correctly.
+- Invalid transfers are rejected.
+- Account balances cannot be modified directly.
+- The application demonstrates the required OOP concepts.
+- The application can be run successfully from `Main`.
+
+---
+
+## Repository Structure
+
+The shared project specification and individual implementations are organized as follows:
 
 ```text
-Customer created: Ahmed
-Savings account created successfully.
-
-Customer created: Omar
-Current account created successfully.
-
-Deposit successful.
-Ahmed balance: 6000 EGP
-
-Withdrawal successful.
-Omar balance: 2500 EGP
-
-Transfer successful.
-Transferred 1500 EGP from Ahmed to Omar.
-
-Final Account Balances
-----------------------
-Ahmed -> 4500 EGP
-Omar  -> 4000 EGP
+spring-boot-learning/
+└── java-fundamentals/
+    └── oop/
+        └── individual/
+            └── banking-system/
+                │
+                ├── README.md
+                │
+                ├── shams-emam/
+                │   └── src/
+                │
+                └── <teammate-name>/
+                    └── src/
 ```
 
-The exact output may change as the implementation evolves.
+`README.md` contains the shared project requirements.
+
+Each developer owns their own implementation directory.
+
+For example:
+
+```text
+banking-system/
+├── README.md
+│
+├── shams-emam/
+│   └── src/
+│
+└── teammate-name/
+    └── src/
+```
+
+Developers should not modify another developer's implementation unless explicitly collaborating on a change.
+
+---
+
+## Individual Implementations
+
+The same requirements are implemented independently by each developer.
+
+### Shams Emam
+
+```text
+banking-system/
+└── shams-emam/
+    └── src/
+```
+
+### Teammate
+
+```text
+banking-system/
+└── <teammate-name>/
+    └── src/
+```
+
+This allows different designs and implementations of the same problem to be reviewed and compared.
+
+---
+
+## Git Workflow
+
+The shared specification and individual implementations use separate branches.
+
+### Shared Specification
+
+Documentation changes use a documentation branch:
+
+```text
+docs/oop/banking-system-specification
+```
+
+Workflow:
+
+```text
+main
+  │
+  └── docs/oop/banking-system-specification
+                │
+                ├── documentation
+                ├── commit
+                ├── push
+                └── pull request
+                         │
+                         ▼
+                    Coach Review
+                         │
+                         ▼
+                   Merge into main
+```
+
+---
+
+### Individual Implementation
+
+Each developer creates a separate feature branch from the latest `main`.
+
+Branch convention:
+
+```text
+feature/oop/<developer>/<project>
+```
+
+Example:
+
+```text
+feature/oop/shams-emam/banking-system
+```
+
+Another developer may use:
+
+```text
+feature/oop/<teammate-name>/banking-system
+```
+
+Workflow:
+
+```text
+main
+  │
+  ├── feature/oop/shams-emam/banking-system
+  │             │
+  │             └── Shams implementation
+  │
+  └── feature/oop/<teammate-name>/banking-system
+                │
+                └── Teammate implementation
+```
+
+Each developer follows:
+
+```text
+Update main
+    ↓
+Create branch
+    ↓
+Implement
+    ↓
+Commit
+    ↓
+Push
+    ↓
+Pull Request
+    ↓
+Coach Review
+    ↓
+Coach Merge
+```
+
+Changes should not be committed directly to `main`.
+
+---
+
+## Commit Convention
+
+Meaningful commit messages should be used throughout development.
+
+Examples:
+
+```text
+feat: implement account base class
+feat: add savings and current account types
+feat: implement deposit and withdrawal operations
+feat: implement account transfers
+refactor: improve account validation logic
+docs: update banking system documentation
+fix: prevent withdrawal with insufficient balance
+```
 
 ---
 
@@ -525,121 +613,57 @@ The exact output may change as the implementation evolves.
 - Java compiler (`javac`)
 - Java Runtime Environment (`java`)
 
-The first version does not require:
+The initial version does not require:
 
 - Spring Boot
-- A database
+- Database integration
 - External libraries
 - Maven
 - Gradle
-- A graphical user interface
+- GUI
 
 ---
 
-## Running the Project
+## Implementation Guidelines
 
-### IntelliJ IDEA
+Each implementation should:
 
-1. Open the project in IntelliJ IDEA.
-2. Mark `src` as the Sources Root if necessary.
-3. Navigate to `Main.java`.
-4. Run `Main.main()`.
+- use meaningful class and method names;
+- keep fields properly encapsulated;
+- avoid putting all logic inside `Main`;
+- assign clear responsibilities to classes;
+- avoid unnecessary duplicated code;
+- validate banking operations before changing state;
+- use inheritance and interfaces only where they improve the design;
+- remain understandable and maintainable.
 
----
+The goal is not to use every OOP feature unnecessarily.
 
-### Windows PowerShell
-
-From the `banking-system` directory:
-
-```powershell
-New-Item -ItemType Directory -Force out | Out-Null
-javac -d out (Get-ChildItem -Recurse src -Filter *.java).FullName
-java -cp out com.learning.banking.Main
-```
+The goal is to make appropriate design decisions.
 
 ---
 
-### Linux / macOS
+## Running an Implementation
 
-From the `banking-system` directory:
+Each developer's implementation should contain its own executable `Main` class.
 
-```bash
-mkdir -p out
-javac -d out $(find src -name "*.java")
-java -cp out com.learning.banking.Main
-```
-
----
-
-## Technologies
-
-- Java
-- Object-Oriented Programming
-- Git
-- GitHub
-
-Java Collections may be introduced where they naturally fit the implementation.
-
----
-
-## Learning Objectives
-
-By completing this project, the goal is to strengthen understanding of:
-
-- Classes and Objects
-- Constructors
-- Encapsulation
-- Inheritance
-- Abstraction
-- Polymorphism
-- Method Overriding
-- Interfaces
-- Composition
-- Object Associations
-- Responsibility separation
-- Basic domain modeling
-- Clean object-oriented design
-
-The project also provides practical experience with the Git/GitHub workflow used throughout this learning repository.
-
----
-
-## Git Workflow
-
-Development is performed on a dedicated feature branch:
+For example:
 
 ```text
-feature/oop/banking-system
+banking-system/
+└── shams-emam/
+    └── src/
 ```
 
-The workflow is:
+The exact compile command depends on the package structure chosen by the developer.
 
-```text
-main
-  │
-  └── feature/oop/banking-system
-              │
-              ├── implementation
-              ├── commits
-              ├── push
-              └── pull request
-                        │
-                        ▼
-                   Code Review
-                        │
-                        ▼
-                  Merge into main
-```
-
-Changes are not committed directly to `main`.
-
-The completed project is submitted through a Pull Request for review before being merged.
+The implementation should also be runnable directly from IntelliJ IDEA.
 
 ---
 
 ## Future Improvements
 
-Possible future improvements include:
+Possible extensions include:
 
 - Transaction history
 - Transaction model
@@ -658,20 +682,44 @@ Possible future improvements include:
 - Spring Boot REST API
 - MySQL or PostgreSQL integration
 
-These improvements are intentionally outside the scope of the initial OOP version.
+These features are intentionally outside the scope of the initial OOP exercise.
+
+---
+
+## Learning Outcomes
+
+After completing the project, developers should have practical experience with:
+
+- Classes and Objects
+- Constructors
+- Encapsulation
+- Inheritance
+- Abstraction
+- Polymorphism
+- Method Overriding
+- Interfaces
+- Composition
+- Object Associations
+- Responsibility separation
+- Domain modeling
+- Clean object-oriented design
+- Git branches
+- Commits
+- Pull Requests
+- Code Review
+
+---
+
+## Project Purpose
+
+This project is part of our Java and Spring Boot backend development learning journey.
+
+It is designed as an individual OOP exercise where each developer implements the same Banking System requirements independently.
+
+The resulting implementations can then be reviewed and compared to improve understanding of Object-Oriented Programming, software design, Git, and collaborative development.
 
 ---
 
 ## Project Status
 
-**Status:** 🚧 In Development
-
-The project will evolve as additional Java and Object-Oriented Programming concepts are learned and applied.
-
----
-
-## Author
-
-**Shams Emam**
-
-Created as part of my Java and Spring Boot backend development learning journey, with a focus on strengthening Object-Oriented Programming and software design fundamentals.
+**Status:** 🚧 Specification Ready / Implementations In Development
