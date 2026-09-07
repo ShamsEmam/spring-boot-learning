@@ -1,4 +1,4 @@
 public interface Transferable {
 
-    boolean transfer(Account targetAccount, double amount);
+    boolean transfer(Account source, Account destination, double amount);
 }

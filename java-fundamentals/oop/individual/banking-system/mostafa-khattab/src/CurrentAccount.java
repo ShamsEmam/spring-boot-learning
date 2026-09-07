@@ -2,11 +2,11 @@ public class CurrentAccount extends Account {
 
     private final double overdraftLimit;
 
-    public CurrentAccount(String accountNumber, double balance, Customer accountHolder) {
-        super(accountNumber, balance, accountHolder);
-        this.overdraftLimit = 1000.0;
-    }
 
+    public CurrentAccount(String accountNumber, double balance, Customer accountHolder, double overdraftLimit) {
+        super(accountNumber, balance, accountHolder);
+        this.overdraftLimit = overdraftLimit;
+    }
 
     private boolean isOverdraftExceeded(double amount) {
         return (getBalance() - amount) < -overdraftLimit;
@@ -14,24 +14,21 @@ public class CurrentAccount extends Account {
 
     @Override
     public boolean withdraw(double amount) {
-        if (amount <= 0) {
-            System.out.println("Invalid withdrawal amount.");
+        if (amount <= 0 || isOverdraftExceeded(amount)) {
             return false;
         }
-        if (isOverdraftExceeded(amount)) {
-            System.out.println("Withdrawal rejected: Overdraft limit exceeded.");
-            return false;
-        }
-        updateBalance(getBalance() - amount);
-        System.out.println("Withdrawal successful.");
 
+        updateBalance(getBalance() - amount);
         return true;
     }
 
+    public double getOverdraftLimit() {
+        return overdraftLimit;
+    }
+
     @Override
-    public void displayAccountInfo() {
-        System.out.println("AccountNumber = " + this.getAccountNumber());
-        System.out.println("Balance = " + this.getBalance());
-        System.out.println("CurrentAccount");
+    public String toString() {
+        return String.format("CurrentAccount[Number=%s, Balance=%.2f, OverdraftLimit=%.2f, Holder=%s]",
+                getAccountNumber(), getBalance(), overdraftLimit, getAccountHolder().getName());
     }
 }

@@ -1,11 +1,12 @@
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class Customer {
-
     private final String customerId;
     private String name;
-    private List<Account> accounts = new ArrayList<>();
+    private final List<Account> accounts;
 
     public Customer(String customerId, String name) {
         this.customerId = customerId;
@@ -13,37 +14,36 @@ public class Customer {
         this.accounts = new ArrayList<>();
     }
 
-    public void addAccount(Account acc) {
-        if (acc != null) {
+    public boolean addAccount(Account acc) {
+        if (acc != null && !accounts.contains(acc)) {
             accounts.add(acc);
-            System.out.println("The Account Added Successfully");
-        } else {
-            System.out.println("Invalid account.");
+            return true;
         }
+        return false;
     }
 
-    public void displayCustomerInfo() {
-        System.out.println("Customer Id = " + customerId);
-        System.out.println("Customer Name = " + name);
-        displayAccounts();
-    }
-
-    public void displayAccounts() {
-        System.out.println("Customer Accounts.");
-        for (Account acc : accounts) {
-            acc.displayAccountInfo();
-        }
-    }
-    public String getCustomerId() {
-        return customerId;
-    }
-
-    public String getName() {
-        return name;
-    }
+    public String getCustomerId() { return customerId; }
+    public String getName() { return name; }
 
     public List<Account> getAccounts() {
-        return accounts;
+        return Collections.unmodifiableList(accounts);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Customer customer = (Customer) o;
+        return Objects.equals(customerId, customer.customerId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(customerId);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Customer[ID=%s, Name=%s, AccountsCount=%d]", customerId, name, accounts.size());
+    }
 }

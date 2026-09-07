@@ -1,44 +1,33 @@
 public class Main {
     public static void main(String[] args) {
-        Bank bank = new Bank("Misr International Bank");
+        CustomerRepository customerRepo = new InMemoryCustomerRepository();
+        AccountRepository accountRepo = new InMemoryAccountRepository();
+        Transferable transferService = new FundTransferService();
+        StatementPrinter printer = new ConsoleStatementPrinter();
 
-        Customer ahmed = new Customer("C100", "Ahmed");
-        Customer omar = new Customer("C200", "Omar");
+        Bank bank = new Bank("National Tech Bank", customerRepo, accountRepo, transferService, printer);
 
-        bank.addCustomer(ahmed);
-        bank.addCustomer(omar);
-        System.out.println();
+        // 1. إنشاء عميل
+        Customer mostafa = new Customer("CUST001", "Mostafa Khattab");
+        bank.registerCustomer(mostafa);
 
-        Account ahmedSavings = new SavingsAccount("SA-5001", 5000.0, ahmed);
-        Account omarCurrent = new CurrentAccount("CA-6001", 3000.0, omar);
+        // 2. إنشاء حسابين
+        Account savings = new SavingsAccount("ACC-SAV-101", 5000.0, mostafa);
+        Account current = new CurrentAccount("ACC-CUR-102", 1500.0, mostafa, 1000.0);
 
-        bank.openAccount(ahmedSavings);
-        bank.openAccount(omarCurrent);
+        bank.openAccount(savings);
+        bank.openAccount(current);
 
-        System.out.println("\n=== Core Acceptance Scenario ===");
+        // 3. طباعة الحالة قبل التحويل
+        System.out.println("BEFORE TRANSFER:");
+        bank.showCustomerStatement("CUST001");
 
-        System.out.println("\n[1] Ahmed deposits 1000 EGP:");
-        ahmedSavings.deposit(1000.0);
+        // 4. إجراء عملية تحويل
+        boolean success = bank.transferFunds("ACC-SAV-101", "ACC-CUR-102", 1000.0);
+        System.out.println("Transfer Success: " + success);
 
-        System.out.println("\n[2] Omar withdraws 500 EGP:");
-        omarCurrent.withdraw(500.0);
-
-        System.out.println("\n[3] Ahmed transfers 1500 EGP to Omar:");
-        ahmedSavings.transfer(omarCurrent, 1500.0);
-
-        System.out.println("\n=== Final Verification ===");
-        System.out.println("Ahmed Expected: 4500.0 EGP | Actual: " + ahmedSavings.getBalance() + " EGP");
-        System.out.println("Omar Expected : 4000.0 EGP | Actual: " + omarCurrent.getBalance() + " EGP");
-
-        System.out.println("\n=== Testing Invalid Operations ===");
-
-        System.out.println("\n[Invalid 1] Withdrawing excess amount from Savings:");
-        ahmedSavings.withdraw(10000.0);
-
-        System.out.println("\n[Invalid 2] Negative deposit:");
-        ahmedSavings.deposit(-50.0);
-
-        System.out.println("\n[Invalid 3] Transfer exceeding balance:");
-        ahmedSavings.transfer(omarCurrent, 20000.0);
+        // 5. طباعة الحالة بعد التحويل
+        System.out.println("\nAFTER TRANSFER:");
+        bank.showCustomerStatement("CUST001");
     }
 }
