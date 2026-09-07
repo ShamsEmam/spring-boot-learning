@@ -1,4 +1,5 @@
 package com.learning.banking;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,11 +26,10 @@ public class Bank {
         this.bankAddress = bankAddress;
         this.bankPhone = bankPhone;
 
-        this.customers = new ArrayList<>();
-        this.accounts = new ArrayList<>();
-        this.branches = new ArrayList<>();
+        customers = new ArrayList<>();
+        accounts = new ArrayList<>();
+        branches = new ArrayList<>();
     }
-
 
     public void addCustomer(Customer customer) {
 
@@ -62,7 +62,6 @@ public class Bank {
         return null;
     }
 
-
     public void addAccount(Account account) {
 
         if (account == null) {
@@ -77,11 +76,12 @@ public class Bank {
             );
         }
 
-        Customer owner = findCustomerById(
-                account.getOwner().getCustomerId()
-        );
+        Customer registeredOwner =
+                findCustomerById(
+                        account.getOwner().getCustomerId()
+                );
 
-        if (owner == null) {
+        if (registeredOwner == null) {
             throw new IllegalStateException(
                     "Account owner must be registered in the bank"
             );
@@ -103,7 +103,6 @@ public class Bank {
 
         return null;
     }
-
 
     public void addBranch(Branch branch) {
 
@@ -136,7 +135,6 @@ public class Bank {
         return null;
     }
 
-
     public String getBankName() {
         return bankName;
     }
@@ -149,8 +147,6 @@ public class Bank {
         return bankPhone;
     }
 
-
-
     public List<Customer> getCustomers() {
         return List.copyOf(customers);
     }
@@ -162,8 +158,6 @@ public class Bank {
     public List<Branch> getBranches() {
         return List.copyOf(branches);
     }
-
-
 
     private static void validateRequiredField(
             String value,

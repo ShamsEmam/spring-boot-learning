@@ -5,12 +5,12 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class CurrentAccountTest {
+class LimitedAccountTest {
 
     private static final double DELTA = 0.001;
 
     private Customer customer;
-    private CurrentAccount account;
+    private LimitedAccount account;
 
     @BeforeEach
     void setUp() {
@@ -22,44 +22,44 @@ class CurrentAccountTest {
                 "123456"
         );
 
-        account = new CurrentAccount(
-                "CUR001",
+        account = new LimitedAccount(
+                "LIM001",
                 5_000.0,
                 customer,
-                2_000.0
+                1_000.0
         );
     }
 
     @Test
-    void withdrawShouldAllowUsingOverdraft() {
+    void withdrawShouldAllowAmountBelowLimit() {
 
-        account.withdraw(6_000.0);
+        account.withdraw(500.0);
 
         assertEquals(
-                -1_000.0,
+                4_500.0,
                 account.getBalance(),
                 DELTA
         );
     }
 
     @Test
-    void withdrawShouldAllowExactOverdraftLimit() {
+    void withdrawShouldAllowExactLimit() {
 
-        account.withdraw(7_000.0);
+        account.withdraw(1_000.0);
 
         assertEquals(
-                -2_000.0,
+                4_000.0,
                 account.getBalance(),
                 DELTA
         );
     }
 
     @Test
-    void withdrawShouldRejectBeyondOverdraftLimit() {
+    void withdrawShouldRejectAmountAboveLimit() {
 
         assertThrows(
                 IllegalStateException.class,
-                () -> account.withdraw(7_001.0)
+                () -> account.withdraw(1_001.0)
         );
 
         assertEquals(
@@ -70,16 +70,19 @@ class CurrentAccountTest {
     }
 
     @Test
-    void accountReferenceShouldUseCurrentAccountPolicy() {
+    void withdrawShouldStillRespectAvailableBalance() {
 
-        Account parentReference = account;
+        LimitedAccount smallAccount =
+                new LimitedAccount(
+                        "LIM002",
+                        500.0,
+                        customer,
+                        1_000.0
+                );
 
-        parentReference.withdraw(6_000.0);
-
-        assertEquals(
-                -1_000.0,
-                parentReference.getBalance(),
-                DELTA
+        assertThrows(
+                IllegalStateException.class,
+                () -> smallAccount.withdraw(700.0)
         );
     }
 }

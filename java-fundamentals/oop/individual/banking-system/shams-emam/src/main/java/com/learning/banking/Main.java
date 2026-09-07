@@ -10,8 +10,7 @@ public class Main {
                 "01012345678"
         );
 
-
-        Branch maadiBranch = new Branch(
+        Branch branch = new Branch(
                 "BR001",
                 "Maadi Branch",
                 "Maadi, Cairo",
@@ -20,17 +19,7 @@ public class Main {
                 "Ahmed Ali"
         );
 
-        Branch nasrCityBranch = new Branch(
-                "BR002",
-                "Nasr City Branch",
-                "Nasr City, Cairo",
-                "01022222222",
-                "nasrcity@shamsbank.com",
-                "Mohamed Hassan"
-        );
-
-        bank.addBranch(maadiBranch);
-        bank.addBranch(nasrCityBranch);
+        bank.addBranch(branch);
 
         Customer customer = new Customer(
                 "CUST001",
@@ -41,69 +30,60 @@ public class Main {
 
         bank.addCustomer(customer);
 
+        SavingsAccount savingsAccount =
+                new SavingsAccount(
+                        "SAV001",
+                        10_000.0,
+                        customer,
+                        5.0,
+                        500.0
+                );
 
-        SavingsAccount savingsAccount = new SavingsAccount(
-                "SAV001",
-                10_000.0,
-                customer,
-                5.0,
-                500.0
-        );
+        CurrentAccount currentAccount =
+                new CurrentAccount(
+                        "CUR001",
+                        5_000.0,
+                        customer,
+                        2_000.0
+                );
 
-        CurrentAccount currentAccount = new CurrentAccount(
-                "CUR001",
-                5_000.0,
-                customer,
-                2_000.0
-        );
+        LimitedAccount limitedAccount =
+                new LimitedAccount(
+                        "LIM001",
+                        5_000.0,
+                        customer,
+                        1_000.0
+                );
 
         bank.addAccount(savingsAccount);
         bank.addAccount(currentAccount);
+        bank.addAccount(limitedAccount);
 
-
-        savingsAccount.deposit(2_000.0);
         savingsAccount.addInterest();
 
-        currentAccount.withdraw(6_000.0);
+        TransferService transferService =
+                new BankTransferService();
 
-        savingsAccount.transfer(
+        transferService.transfer(
+                savingsAccount,
                 currentAccount,
-                1_000.0
+                1000.0
         );
 
-        System.out.println("========== BANK ==========");
-        System.out.println("Name     : " + bank.getBankName());
-        System.out.println("Address  : " + bank.getBankAddress());
-        System.out.println("Phone    : " + bank.getBankPhone());
+        System.out.println("===== BANK =====");
+        System.out.println(bank.getBankName());
 
-        System.out.println("\nCustomers: "
-                + bank.getCustomers().size());
-
-        System.out.println("Accounts : "
-                + bank.getAccounts().size());
-
-        System.out.println("Branches : "
-                + bank.getBranches().size());
-
-
-        System.out.println("\n========== CUSTOMER ==========");
-        System.out.println("ID    : " + customer.getCustomerId());
-        System.out.println("Name  : " + customer.getName());
-        System.out.println("Email : " + customer.getEmail());
-
-
-        System.out.println("\n========== ACCOUNTS ==========");
+        System.out.println("\n===== ACCOUNTS =====");
 
         for (Account account : bank.getAccounts()) {
-            printAccount(account);
+
+            System.out.println(
+                    account.getClass().getSimpleName()
+                            + " | "
+                            + account.getAccountId()
+                            + " | Balance: "
+                            + account.getBalance()
+            );
         }
-    }
-
-
-    private static void printAccount(Account account) {
-
-        System.out.println("\nAccount ID : " + account.getAccountId());
-        System.out.println("Owner      : " + account.getOwner().getName());
-        System.out.println("Balance    : " + account.getBalance());
     }
 }

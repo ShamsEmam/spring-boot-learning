@@ -64,9 +64,13 @@ public class Branch {
     }
 
     public void changeManager(String newManager) {
-        validateRequiredField(newManager, "Branch manager");
 
-        this.manager = newManager;
+        validateRequiredField(
+                newManager,
+                "Branch manager"
+        );
+
+        manager = newManager;
     }
 
     private static void validateRequiredField(

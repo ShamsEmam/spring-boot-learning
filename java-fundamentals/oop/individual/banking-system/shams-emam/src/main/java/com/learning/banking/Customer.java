@@ -1,22 +1,28 @@
 package com.learning.banking;
+
 public class Customer {
 
     private final String customerId;
     private final String name;
     private final String email;
+
     private String password;
 
-    public Customer(String customerId, String name, String email, String password) {
-        if (customerId == null || name == null || email == null || password == null) {
-            throw new IllegalArgumentException("Customer information cannot be null");
-        }
+    public Customer(
+            String customerId,
+            String name,
+            String email,
+            String password) {
 
-        if (customerId.isBlank() || name.isBlank() || email.isBlank() || password.isBlank()) {
-            throw new IllegalArgumentException("Customer information cannot be blank");
-        }
+        validateRequiredField(customerId, "Customer ID");
+        validateRequiredField(name, "Customer name");
+        validateRequiredField(email, "Customer email");
+        validateRequiredField(password, "Password");
 
         if (customerId.matches(".*\\s.*")) {
-            throw new IllegalArgumentException("Customer ID cannot contain spaces");
+            throw new IllegalArgumentException(
+                    "Customer ID cannot contain spaces"
+            );
         }
 
         this.customerId = customerId;
@@ -38,10 +44,23 @@ public class Customer {
     }
 
     public void changePassword(String newPassword) {
-        if (newPassword == null || newPassword.isBlank()) {
-            throw new IllegalArgumentException("Password cannot be null or blank");
-        }
+
+        validateRequiredField(
+                newPassword,
+                "Password"
+        );
 
         this.password = newPassword;
+    }
+
+    private static void validateRequiredField(
+            String value,
+            String fieldName) {
+
+        if (value == null || value.isBlank()) {
+            throw new IllegalArgumentException(
+                    fieldName + " cannot be null or blank"
+            );
+        }
     }
 }

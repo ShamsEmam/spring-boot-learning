@@ -1,4 +1,5 @@
 package com.learning.banking;
+
 public class SavingsAccount extends Account {
 
     private final double interestRate;
@@ -16,6 +17,7 @@ public class SavingsAccount extends Account {
         if (!Double.isFinite(interestRate)
                 || interestRate < 0
                 || interestRate > 100) {
+
             throw new IllegalArgumentException(
                     "Interest rate must be between 0 and 100"
             );
@@ -23,8 +25,9 @@ public class SavingsAccount extends Account {
 
         if (!Double.isFinite(minimumBalance)
                 || minimumBalance < 0) {
+
             throw new IllegalArgumentException(
-                    "Minimum balance cannot be negative"
+                    "Minimum balance must be a valid non-negative amount"
             );
         }
 
@@ -47,24 +50,17 @@ public class SavingsAccount extends Account {
     }
 
     public void addInterest() {
+
         double interestAmount =
                 getBalance() * interestRate / 100.0;
 
-        if (interestAmount <= 0) {
-            return;
+        if (interestAmount > 0) {
+            deposit(interestAmount);
         }
-
-        super.deposit(interestAmount);
     }
 
     @Override
-    public double withdraw(double amount) {
-
-        if (!Double.isFinite(amount) || amount <= 0) {
-            throw new IllegalArgumentException(
-                    "Withdrawal amount must be greater than zero"
-            );
-        }
+    protected void validateWithdrawalPolicy(double amount) {
 
         double remainingBalance =
                 getBalance() - amount;
@@ -74,7 +70,5 @@ public class SavingsAccount extends Account {
                     "Withdrawal would reduce the balance below the minimum balance"
             );
         }
-
-        return super.withdraw(amount);
     }
 }

@@ -1,13 +1,16 @@
 package com.learning.banking;
-//package main.java.com.learning.banking;
 
-public class Account implements Transferable {
+public abstract class Account
+        implements Withdrawable, Depositable {
 
     private final String accountId;
     private final Customer owner;
     private double balance;
 
-    public Account(String accountId, double initialBalance, Customer owner) {
+    public Account(
+            String accountId,
+            double initialBalance,
+            Customer owner) {
 
         if (accountId == null || accountId.isBlank()) {
             throw new IllegalArgumentException(
@@ -21,7 +24,9 @@ public class Account implements Transferable {
             );
         }
 
-        if (!Double.isFinite(initialBalance) || initialBalance < 0) {
+        if (!Double.isFinite(initialBalance)
+                || initialBalance < 0) {
+
             throw new IllegalArgumentException(
                     "Initial balance must be a valid non-negative amount"
             );
@@ -38,7 +43,6 @@ public class Account implements Transferable {
         this.owner = owner;
     }
 
-
     public String getAccountId() {
         return accountId;
     }
@@ -51,68 +55,40 @@ public class Account implements Transferable {
         return balance;
     }
 
-
-
+    @Override
     public void deposit(double amount) {
+
         validatePositiveAmount(amount, "Deposit");
 
         balance += amount;
     }
 
+    @Override
+    public final double withdraw(double amount) {
 
-    public double withdraw(double amount) {
         validatePositiveAmount(amount, "Withdrawal");
 
-        if (amount > balance) {
-            throw new IllegalStateException(
-                    "Insufficient balance"
-            );
-        }
+        validateWithdrawalPolicy(amount);
 
-        deductBalance(amount);
+        balance -= amount;
 
         return amount;
     }
 
+    protected abstract void validateWithdrawalPolicy(
+            double amount
+    );
 
-    @Override
-    public void transfer(Account destination, double amount) {
+    private void validatePositiveAmount(
+            double amount,
+            String operation) {
 
-        if (destination == null) {
+        if (!Double.isFinite(amount)
+                || amount <= 0) {
+
             throw new IllegalArgumentException(
-                    "Destination account cannot be null"
-            );
-        }
-
-        if (destination == this) {
-            throw new IllegalArgumentException(
-                    "Cannot transfer to the same account"
-            );
-        }
-
-        validatePositiveAmount(amount, "Transfer");
-
-        withdraw(amount);
-        destination.deposit(amount);
-    }
-
-
-
-    protected void deductBalance(double amount) {
-        balance -= amount;
-    }
-
-    protected void validateWithdrawalAmount(double amount) {
-        validatePositiveAmount(amount, "Withdrawal");
-    }
-
-
-
-    private void validatePositiveAmount(double amount, String operation) {
-
-        if (!Double.isFinite(amount) || amount <= 0) {
-            throw new IllegalArgumentException(
-                    operation + " amount must be a valid number greater than zero"
+                    operation
+                            + " amount must be a valid number greater than zero"
             );
         }
     }
