@@ -1,4 +1,4 @@
-package com.learning.banking;
+package com.learning.banking.model;
 
 public class SavingsAccount extends Account {
 

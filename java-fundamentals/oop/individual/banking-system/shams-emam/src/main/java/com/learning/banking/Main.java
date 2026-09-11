@@ -1,5 +1,7 @@
 package com.learning.banking;
 
+import com.learning.banking.model.*;
+
 public class Main {
 
     public static void main(String[] args) {

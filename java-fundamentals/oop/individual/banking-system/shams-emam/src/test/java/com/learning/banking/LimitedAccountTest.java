@@ -1,5 +1,7 @@
 package com.learning.banking;
 
+import com.learning.banking.model.Customer;
+import com.learning.banking.model.LimitedAccount;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

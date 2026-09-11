@@ -1,4 +1,4 @@
-package com.learning.banking;
+package com.learning.banking.model;
 
 import java.util.ArrayList;
 import java.util.List;
