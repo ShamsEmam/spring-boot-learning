@@ -1,6 +1,5 @@
-package com.learning.banking;
+package com.learning.banking.model;
 
-import com.learning.banking.model.Customer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +19,7 @@ class CustomerTest {
         );
     }
 
-    // ============Constructor Tests=============
+    // ============ Constructor Tests ============
 
     @Test
     void constructorShouldCreateCustomerSuccessfully() {
@@ -156,7 +155,8 @@ class CustomerTest {
         );
     }
 
-    // ===========Password Tests============
+    // ============ Password Tests ============
+
     @Test
     void changePasswordShouldWorkSuccessfully() {
 
@@ -183,7 +183,7 @@ class CustomerTest {
         );
     }
 
-    // ============Encapsulation Tests================
+    // ============ Encapsulation Tests ============
 
     @Test
     void customerDataShouldRemainUnchangedAfterPasswordChange() {

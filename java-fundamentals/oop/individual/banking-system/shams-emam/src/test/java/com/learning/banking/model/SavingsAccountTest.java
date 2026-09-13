@@ -1,19 +1,16 @@
-package com.learning.banking;
+package com.learning.banking.model;
 
-import com.learning.banking.model.Account;
-import com.learning.banking.model.CurrentAccount;
-import com.learning.banking.model.Customer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class CurrentAccountTest {
+class SavingsAccountTest {
 
     private static final double DELTA = 0.001;
 
     private Customer customer;
-    private CurrentAccount account;
+    private SavingsAccount account;
 
     @BeforeEach
     void setUp() {
@@ -25,64 +22,62 @@ class CurrentAccountTest {
                 "123456"
         );
 
-        account = new CurrentAccount(
-                "CUR001",
-                5_000.0,
+        account = new SavingsAccount(
+                "SAV001",
+                10_000.0,
                 customer,
-                2_000.0
+                5.0,
+                500.0
         );
     }
 
     @Test
-    void withdrawShouldAllowUsingOverdraft() {
+    void addInterestShouldIncreaseBalance() {
 
-        account.withdraw(6_000.0);
+        account.addInterest();
 
         assertEquals(
-                -1_000.0,
+                10_500.0,
                 account.getBalance(),
                 DELTA
         );
     }
 
     @Test
-    void withdrawShouldAllowExactOverdraftLimit() {
+    void withdrawShouldPreserveMinimumBalance() {
 
-        account.withdraw(7_000.0);
+        account.withdraw(9_500.0);
 
         assertEquals(
-                -2_000.0,
+                500.0,
                 account.getBalance(),
                 DELTA
         );
     }
 
     @Test
-    void withdrawShouldRejectBeyondOverdraftLimit() {
+    void withdrawShouldRejectBelowMinimumBalance() {
 
         assertThrows(
                 IllegalStateException.class,
-                () -> account.withdraw(7_001.0)
+                () -> account.withdraw(9_501.0)
         );
 
         assertEquals(
-                5_000.0,
+                10_000.0,
                 account.getBalance(),
                 DELTA
         );
     }
 
     @Test
-    void accountReferenceShouldUseCurrentAccountPolicy() {
+    void accountReferenceShouldUseSavingsPolicy() {
 
         Account parentReference = account;
 
-        parentReference.withdraw(6_000.0);
-
-        assertEquals(
-                -1_000.0,
-                parentReference.getBalance(),
-                DELTA
+        assertThrows(
+                IllegalStateException.class,
+                () -> parentReference.withdraw(9_501.0)
         );
     }
 }

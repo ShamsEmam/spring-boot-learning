@@ -1,10 +1,26 @@
 package com.learning.banking;
 
 import com.learning.banking.model.*;
+import com.learning.banking.repository.AccountRepository;
+import com.learning.banking.repository.BranchRepository;
+import com.learning.banking.repository.CustomerRepository;
+import com.learning.banking.repository.inmemory.InMemoryAccountRepository;
+import com.learning.banking.repository.inmemory.InMemoryBranchRepository;
+import com.learning.banking.repository.inmemory.InMemoryCustomerRepository;
+import com.learning.banking.service.AccountService;
+import com.learning.banking.service.BranchService;
+import com.learning.banking.service.CustomerService;
+import com.learning.banking.service.TransferService;
+import com.learning.banking.service.impl.AccountServiceImpl;
+import com.learning.banking.service.impl.BankTransferService;
+import com.learning.banking.service.impl.BranchServiceImpl;
+import com.learning.banking.service.impl.CustomerServiceImpl;
 
 public class Main {
 
     public static void main(String[] args) {
+
+        // ==============Bank================
 
         Bank bank = new Bank(
                 "Shams Bank",
@@ -12,80 +28,197 @@ public class Main {
                 "01012345678"
         );
 
-        Branch branch = new Branch(
-                "BR001",
-                "Maadi Branch",
-                "Maadi, Cairo",
-                "01011111111",
-                "maadi@shamsbank.com",
-                "Ahmed Ali"
-        );
+        // =============Repositories==============
 
-        bank.addBranch(branch);
+        CustomerRepository customerRepository =
+                new InMemoryCustomerRepository();
 
-        Customer customer = new Customer(
+        AccountRepository accountRepository =
+                new InMemoryAccountRepository();
+
+        BranchRepository branchRepository =
+                new InMemoryBranchRepository();
+
+        // ============Services================
+        CustomerService customerService =
+                new CustomerServiceImpl(
+                        customerRepository
+                );
+
+        AccountService accountService =
+                new AccountServiceImpl(
+                        accountRepository,
+                        customerRepository
+                );
+
+        BranchService branchService =
+                new BranchServiceImpl(
+                        branchRepository
+                );
+
+        TransferService transferService =
+                new BankTransferService(
+                        accountRepository
+                );
+
+        // ===============Customers================
+
+        Customer shams = new Customer(
                 "CUST001",
                 "Shams",
                 "shams@gmail.com",
                 "123456"
         );
 
-        bank.addCustomer(customer);
+        Customer ahmed = new Customer(
+                "CUST002",
+                "Ahmed",
+                "ahmed@gmail.com",
+                "123456"
+        );
 
-        SavingsAccount savingsAccount =
+        customerService.registerCustomer(shams);
+        customerService.registerCustomer(ahmed);
+
+        // ===============Branches==================
+
+        Branch maadiBranch = new Branch(
+                "BR001",
+                "Maadi Branch",
+                "Maadi, Cairo",
+                "01098765432",
+                "maadi@shamsbank.com",
+                "Ahmed Ali"
+        );
+
+        Branch nasrCityBranch = new Branch(
+                "BR002",
+                "Nasr City Branch",
+                "Nasr City, Cairo",
+                "01011111111",
+                "nasrcity@shamsbank.com",
+                "Mohamed Hassan"
+        );
+
+        branchService.addBranch(maadiBranch);
+        branchService.addBranch(nasrCityBranch);
+
+        // ==============Accounts===============
+
+        Account savingsAccount =
                 new SavingsAccount(
                         "SAV001",
                         10_000.0,
-                        customer,
+                        shams,
                         5.0,
                         500.0
                 );
 
-        CurrentAccount currentAccount =
+        Account currentAccount =
                 new CurrentAccount(
                         "CUR001",
                         5_000.0,
-                        customer,
+                        ahmed,
                         2_000.0
                 );
 
-        LimitedAccount limitedAccount =
+        Account standardAccount =
+                new StandardAccount(
+                        "STD001",
+                        3_000.0,
+                        shams
+                );
+
+        Account limitedAccount =
                 new LimitedAccount(
                         "LIM001",
                         5_000.0,
-                        customer,
+                        ahmed,
                         1_000.0
                 );
 
-        bank.addAccount(savingsAccount);
-        bank.addAccount(currentAccount);
-        bank.addAccount(limitedAccount);
+        accountService.openAccount(savingsAccount);
+        accountService.openAccount(currentAccount);
+        accountService.openAccount(standardAccount);
+        accountService.openAccount(limitedAccount);
 
-        savingsAccount.addInterest();
+        // ==============Account Operations=================
 
-        TransferService transferService =
-                new BankTransferService();
-
-        transferService.transfer(
-                savingsAccount,
-                currentAccount,
-                1000.0
+        accountService.deposit(
+                "SAV001",
+                2_000.0
         );
 
+        accountService.withdraw(
+                "CUR001",
+                6_000.0
+        );
+
+        // ===============Transfer================
+
+        transferService.transfer(
+                "SAV001",
+                "CUR001",
+                1_000.0
+        );
+
+        // ===============Branch Operation================
+
+        branchService.changeBranchManager(
+                "BR001",
+                "Omar Hassan"
+        );
+
+        // =============Output==============
+
         System.out.println("===== BANK =====");
-        System.out.println(bank.getBankName());
+        System.out.println(
+                "Name: " + bank.getBankName()
+        );
+        System.out.println(
+                "Address: " + bank.getBankAddress()
+        );
+        System.out.println(
+                "Phone: " + bank.getBankPhone()
+        );
 
-        System.out.println("\n===== ACCOUNTS =====");
+        System.out.println();
 
-        for (Account account : bank.getAccounts()) {
+        System.out.println("===== ACCOUNTS =====");
 
-            System.out.println(
-                    account.getClass().getSimpleName()
-                            + " | "
-                            + account.getAccountId()
-                            + " | Balance: "
-                            + account.getBalance()
-            );
-        }
+        System.out.println(
+                "Savings balance: "
+                        + savingsAccount.getBalance()
+        );
+
+        System.out.println(
+                "Current balance: "
+                        + currentAccount.getBalance()
+        );
+
+        System.out.println(
+                "Standard balance: "
+                        + standardAccount.getBalance()
+        );
+
+        System.out.println(
+                "Limited balance: "
+                        + limitedAccount.getBalance()
+        );
+
+        System.out.println();
+
+        System.out.println("===== BRANCH =====");
+
+        Branch branch =
+                branchService.findBranchById("BR001");
+
+        System.out.println(
+                "Branch: " + branch.getName()
+        );
+
+        System.out.println(
+                "Manager: " + branch.getManager()
+        );
     }
 }

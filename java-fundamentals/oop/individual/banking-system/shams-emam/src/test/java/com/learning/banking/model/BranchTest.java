@@ -1,6 +1,5 @@
-package com.learning.banking;
+package com.learning.banking.model;
 
-import com.learning.banking.model.Branch;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
