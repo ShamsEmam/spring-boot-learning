@@ -1,6 +1,8 @@
+package model;
+
 import java.util.Objects;
 
-public abstract class Account {
+public abstract class Account implements Withdrawable {
     private final String accountNumber;
     private double balance;
     private final Customer accountHolder;
@@ -11,31 +13,24 @@ public abstract class Account {
         this.accountHolder = accountHolder;
     }
 
-    public abstract boolean withdraw(double amount);
-
-    public boolean deposit(double amount) {
-        if (amount <= 0) {
-            return false;
-        }
-        this.balance += amount;
-        return true;
+    public String getAccountNumber() {
+        return accountNumber;
     }
 
     public double getBalance() {
         return balance;
     }
 
+    public void setBalance(double balance) {
+        this.balance = balance;
+    }
+
     public Customer getAccountHolder() {
         return accountHolder;
     }
 
-    public String getAccountNumber() {
-        return accountNumber;
-    }
-
-    protected void updateBalance(double newBalance) {
-        this.balance = newBalance;
-    }
+    @Override
+    public abstract boolean canWithdraw(double amount);
 
     @Override
     public boolean equals(Object o) {
@@ -48,11 +43,5 @@ public abstract class Account {
     @Override
     public int hashCode() {
         return Objects.hash(accountNumber);
-    }
-
-    @Override
-    public String toString() {
-        return String.format("Account[%s] | Balance: %.2f | Holder: %s",
-                accountNumber, balance, accountHolder.getName());
     }
 }

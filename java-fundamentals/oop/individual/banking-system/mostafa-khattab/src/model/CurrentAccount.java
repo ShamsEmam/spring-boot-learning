@@ -1,29 +1,20 @@
+package model;
+
 public class CurrentAccount extends Account {
-
-    private final double overdraftLimit;
-
+    private double overdraftLimit;
 
     public CurrentAccount(String accountNumber, double balance, Customer accountHolder, double overdraftLimit) {
         super(accountNumber, balance, accountHolder);
         this.overdraftLimit = overdraftLimit;
     }
 
-    private boolean isOverdraftExceeded(double amount) {
-        return (getBalance() - amount) < -overdraftLimit;
+    public double getOverdraftLimit() {
+        return overdraftLimit;
     }
 
     @Override
-    public boolean withdraw(double amount) {
-        if (amount <= 0 || isOverdraftExceeded(amount)) {
-            return false;
-        }
-
-        updateBalance(getBalance() - amount);
-        return true;
-    }
-
-    public double getOverdraftLimit() {
-        return overdraftLimit;
+    public boolean canWithdraw(double amount) {
+        return amount > 0 && (getBalance() + overdraftLimit >= amount);
     }
 
     @Override

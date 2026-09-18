@@ -1,3 +1,5 @@
+package model;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -9,24 +11,39 @@ public class Customer {
     private final List<Account> accounts;
 
     public Customer(String customerId, String name) {
+        if (customerId == null || customerId.isBlank()) {
+            throw new IllegalArgumentException("Customer ID cannot be null or empty");
+        }
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Customer name cannot be null or empty");
+        }
         this.customerId = customerId;
         this.name = name;
         this.accounts = new ArrayList<>();
     }
 
-    public boolean addAccount(Account acc) {
-        if (acc != null && !accounts.contains(acc)) {
-            accounts.add(acc);
-            return true;
-        }
-        return false;
+    public String getCustomerId() {
+        return customerId;
     }
 
-    public String getCustomerId() { return customerId; }
-    public String getName() { return name; }
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        if (name != null && !name.isBlank()) {
+            this.name = name;
+        }
+    }
 
     public List<Account> getAccounts() {
         return Collections.unmodifiableList(accounts);
+    }
+
+    public void internalAddAccount(Account account) {
+        if (account != null && !accounts.contains(account)) {
+            accounts.add(account);
+        }
     }
 
     @Override
