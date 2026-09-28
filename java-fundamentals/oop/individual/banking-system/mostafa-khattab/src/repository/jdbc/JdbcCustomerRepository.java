@@ -58,7 +58,6 @@ public class JdbcCustomerRepository implements CustomerRepository {
             if (rs.next()) {
                 Customer customer = new Customer(rs.getString("customer_id"), rs.getString("name"));
 
-                // استخدام internalAddAccount بدلاً من addAccount
                 List<Account> customerAccounts = accountRepository.findByCustomerId(customerId);
                 for (Account acc : customerAccounts) {
                     customer.internalAddAccount(acc);
