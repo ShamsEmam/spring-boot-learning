@@ -1,7 +1,6 @@
 package service.impl;
 
 import model.Account;
-import model.Interestable;
 import repository.AccountRepository;
 import service.AccountService;
 
@@ -19,31 +18,44 @@ public class AccountServiceImpl implements AccountService {
         Account account = accountRepo.findByNumber(accountNumber);
         if (account == null) return false;
 
-        account.setBalance(account.getBalance() + amount);
-        accountRepo.save(account);
-        return true;
+        double oldBalance = account.getBalance();
+        account.setBalance(oldBalance + amount);
+
+        if (accountRepo.save(account)) {
+            return true;
+        }
+
+        account.setBalance(oldBalance);
+        return false;
     }
 
     @Override
     public boolean withdraw(String accountNumber, double amount) {
+        if (amount <= 0) return false;
+
         Account account = accountRepo.findByNumber(accountNumber);
         if (account == null || !account.canWithdraw(amount)) {
             return false;
         }
 
-        account.setBalance(account.getBalance() - amount);
-        accountRepo.save(account);
-        return true;
-    }
+        double oldBalance = account.getBalance();
+        account.setBalance(oldBalance - amount);
 
+        if (accountRepo.save(account)) {
+            return true;
+        }
+
+        account.setBalance(oldBalance);
+        return false;
+    }
 
     @Override
     public boolean applyInterest(String accountNumber) {
         Account account = accountRepo.findByNumber(accountNumber);
+        if (account == null) return false;
 
-        if (account instanceof Interestable) {
-            Interestable interestableAccount = (Interestable) account;
-            double interest = interestableAccount.calcInterest();
+        if (account.getAccountType() == Account.AccountType.SAVING) {
+            double interest = account.calcInterest();
             if (interest > 0) {
                 account.setBalance(account.getBalance() + interest);
                 accountRepo.save(account);
@@ -66,4 +78,18 @@ public class AccountServiceImpl implements AccountService {
     public Account getAccount(String accountNumber) {
         return accountRepo.findByNumber(accountNumber);
     }
+
+    @Override
+    public boolean transferFunds(
+            String fromAccountNumber,
+            String toAccountNumber,
+            double amount) {
+
+        return accountRepo.transferFunds(
+                fromAccountNumber,
+                toAccountNumber,
+                amount
+        );
+    }
+
 }

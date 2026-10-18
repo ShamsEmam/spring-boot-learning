@@ -10,28 +10,26 @@ public class FundTransferService implements TransferService {
         this.accountService = accountService;
     }
 
+
     @Override
-    public boolean transfer(String fromAccountNumber, String toAccountNumber, double amount) {
-        if (fromAccountNumber == null || toAccountNumber == null || fromAccountNumber.equals(toAccountNumber)) {
+    public boolean transfer(
+            String fromAccountNumber,
+            String toAccountNumber,
+            double amount) {
+
+        if (fromAccountNumber == null
+                || toAccountNumber == null
+                || fromAccountNumber.equals(toAccountNumber)
+                || !Double.isFinite(amount)
+                || amount <= 0) {
             return false;
         }
-        if (amount <= 0) {
-            return false;
-        }
 
-        boolean isWithdrawn = accountService.withdraw(fromAccountNumber, amount);
-
-        if (isWithdrawn) {
-            boolean isDeposited = accountService.deposit(toAccountNumber, amount);
-
-            if (isDeposited) {
-                return true;
-            } else {
-                accountService.deposit(fromAccountNumber, amount);
-                return false;
-            }
-        }
-
-        return false;
+        return accountService.transferFunds(
+                fromAccountNumber,
+                toAccountNumber,
+                amount
+        );
     }
+
 }

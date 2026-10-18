@@ -9,4 +9,9 @@ public interface AccountRepository {
     boolean exists(String accountNumber);
     List<Account> findAll();
     List<Account> findByCustomerId(String customerId);
+    boolean transferFunds(
+            String fromAccountNumber,
+            String toAccountNumber,
+            double amount
+    );
 }
