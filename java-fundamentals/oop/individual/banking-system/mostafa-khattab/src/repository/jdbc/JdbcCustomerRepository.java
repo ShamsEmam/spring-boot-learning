@@ -1,5 +1,6 @@
 package repository.jdbc;
 
+import factory.DatabaseConnectionFactory;
 import model.Account;
 import model.Customer;
 import repository.AccountRepository;
@@ -10,20 +11,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JdbcCustomerRepository implements CustomerRepository {
-    private final String url;
-    private final String user;
-    private final String password;
+
     private final AccountRepository accountRepository;
 
-    public JdbcCustomerRepository(String url, String user, String password, AccountRepository accountRepository) {
-        this.url = url;
-        this.user = user;
-        this.password = password;
+    public JdbcCustomerRepository(AccountRepository accountRepository) {
         this.accountRepository = accountRepository;
     }
 
     private Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(url, user, password);
+        return DatabaseConnectionFactory.getInstance().getConnection();
     }
 
     @Override

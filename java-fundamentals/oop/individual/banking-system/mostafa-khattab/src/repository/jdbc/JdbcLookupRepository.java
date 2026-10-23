@@ -1,5 +1,6 @@
 package repository.jdbc;
 
+import factory.DatabaseConnectionFactory;
 import model.Lookup;
 import repository.LookupRepository;
 
@@ -8,18 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JdbcLookupRepository implements LookupRepository {
-    private final String url;
-    private final String user;
-    private final String password;
 
-    public JdbcLookupRepository(String url, String user, String password) {
-        this.url = url;
-        this.user = user;
-        this.password = password;
+    public JdbcLookupRepository() {
     }
 
     private Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(url, user, password);
+        return DatabaseConnectionFactory.getInstance().getConnection();
     }
 
     @Override

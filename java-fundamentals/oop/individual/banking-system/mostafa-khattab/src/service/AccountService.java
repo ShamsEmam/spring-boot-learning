@@ -8,4 +8,9 @@ public interface AccountService {
     boolean applyInterest(String accountNumber);
     double getBalance(String accountNumber);
     Account getAccount(String accountNumber);
+    boolean transferFunds(
+            String fromAccountNumber,
+            String toAccountNumber,
+            double amount
+    );
 }

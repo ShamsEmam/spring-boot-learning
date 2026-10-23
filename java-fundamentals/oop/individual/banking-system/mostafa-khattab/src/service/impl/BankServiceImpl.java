@@ -2,7 +2,6 @@ package service.impl;
 
 import model.Account;
 import model.Customer;
-import model.SavingsAccount;
 import repository.AccountRepository;
 import repository.LookupRepository;
 import service.AccountService;
@@ -74,9 +73,9 @@ public class BankServiceImpl implements BankService {
             return false;
         }
 
-        String accountType = (account instanceof SavingsAccount) ? "SAVINGS" : "CURRENT";
+        String accountType = account.getAccountType().name(); // "SAVING" || "CURRENT"
         if (!lookupRepo.existsActive("ACCOUNT_TYPE", accountType)) {
-            System.out.println("عذراً، نوع الحساب هذا غير متاح حالياً.");
+            System.out.println("Sorry, account type '" + accountType + "' is not active or available.");
             return false;
         }
 
