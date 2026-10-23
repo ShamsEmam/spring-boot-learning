@@ -1,0 +1,27 @@
+package com.learning.banking.model;
+
+public class StandardAccount extends Account {
+
+    public StandardAccount(
+            String accountId,
+            double initialBalance,
+            Customer owner) {
+
+        super(accountId, initialBalance, owner);
+    }
+
+    @Override
+    public AccountType getType() {
+        return AccountType.STANDARD;
+    }
+
+    @Override
+    protected void validateWithdrawalPolicy(double amount) {
+
+        if (amount > getBalance()) {
+            throw new IllegalStateException(
+                    "Insufficient balance"
+            );
+        }
+    }
+}
